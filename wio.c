@@ -1,6 +1,9 @@
 #include <X11/Xlib.h>
 #include <X11/X.h>
 #include <stdio.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
 
 #define OWCA 'o'
 #define WILK 'w'
@@ -37,8 +40,7 @@ XSetWindowAttributes mywindowattributes;
 XGCValues mygcvalues;
 GC mygc;
 Visual *myvisual;
-int mydepth;
-int myscreen;
+int mydepth, myscreen, sock;
 int wyswietlaj = 1;
 Colormap colorMap;
 XColor darkBrown,lightBrown,white,black,dummy;
@@ -46,13 +48,13 @@ XEvent myevent;
 pion plansza[8][8];
 ruch ostatniRuch;
 char mojTyp;
+struct sockaddr_in sad;
 
 pion null;
 int clickCounter=0;
 int wykonalemRuch = 0;
 
 int main(int argc, char* argv[]){
-  int stan;
   inicjujOkno();
   inicjujPlansze();
   
@@ -141,11 +143,9 @@ void rysujPlansze(){
         XSetForeground(mydisplay,mygc,darkBrown.pixel);
       }
       XFillRectangle(mydisplay,mywindow,mygc,j*50,i*50,50,50);
-      
       if(plansza[i][j].typ != null.typ) {
         rysujPionek(plansza[i][j]);
       }
-      
     }
   }
   XFlush(mydisplay);
@@ -159,7 +159,7 @@ void eventy(){
   switch (myevent.type) {
      
      case Expose:
-      rysujPlansze();
+      rysujPlansze(1);
       break;
      case ButtonPress:
       if(clickCounter ==0){
@@ -270,12 +270,36 @@ void sprawdzStan(){
 }
 
 void koniec(char kto){
+  XClearWindow(mydisplay,mywindow);
+  rysujPlansze();
+    
   if(mojTyp == kto){
-    printf("Wygrales!\n");
-    exit(0);
+    XSetForeground(mydisplay,mygc,white.pixel);
+    XDrawString(mydisplay,mywindow,mygc,180,200,"Wygrales!",9);
+    while(1) {
+      XNextEvent(mydisplay,&myevent); 
+  
+      switch (myevent.type) {
+        case Expose:
+          rysujPlansze();
+          XSetForeground(mydisplay,mygc,white.pixel);
+          XDrawString(mydisplay,mywindow,mygc,180,200,"Wygrales!",9);    
+        }
+    }
   }
   else{
-    printf("Przegrales!\n");
-    exit(0);
+    XSetForeground(mydisplay,mygc,white.pixel);
+    XDrawString(mydisplay,mywindow,mygc,180,200,"Przegrales",10);
+    while(1) {
+      XNextEvent(mydisplay,&myevent); 
+  
+      switch (myevent.type) {
+        case Expose:
+          rysujPlansze();
+          XSetForeground(mydisplay,mygc,white.pixel);
+          XDrawString(mydisplay,mywindow,mygc,180,200,"Przegrales",10);
+        }
+    }
+    
   }
 }
