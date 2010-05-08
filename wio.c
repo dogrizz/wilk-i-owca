@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
+#define PORT 5000
 #define OWCA 'o'
 #define WILK 'w'
 
@@ -52,8 +53,6 @@ char mojTyp;
 int sock;
 struct sockaddr_in sad;
 char *adresPrzeciwnika = NULL;
-int portPrzeciwnika;
-int mojPort;
 
 pion null;
 int clickCounter=0;
@@ -67,8 +66,6 @@ int main(int argc, char* argv[]){
   
   if(argc == 1) {
     mojTyp = WILK;
-    mojPort = 5000;
-    portPrzeciwnika = 5001;
     zainicjujPolaczenie();
     odbierz();
    // zainicjujPolaczenie();
@@ -79,8 +76,6 @@ int main(int argc, char* argv[]){
     inicjalizacja.x2 =9;
     inicjalizacja.y2 =9;
     adresPrzeciwnika = argv[1];
-    portPrzeciwnika = 5000;
-    mojPort = 5001;
     zainicjujPolaczenie();
     wyslij(inicjalizacja);
     ruchPrzeciwnika = odbierz();
@@ -98,9 +93,9 @@ int main(int argc, char* argv[]){
       wyslij(ostatniRuch);
       wykonalemRuch = 0;
       sprawdzStan();
-      //ruchPrzeciwnika = odbierz();
-      //wykonajRuch(ruchPrzeciwnika);
-      //sprawdzStan();
+      ruchPrzeciwnika = odbierz();
+      wykonajRuch(ruchPrzeciwnika);
+      sprawdzStan();
     }
   }
   
@@ -336,13 +331,15 @@ void zainicjujPolaczenie(){
   sock=socket(AF_INET,SOCK_DGRAM,0);
   sad.sin_family=AF_INET;
   if(adresPrzeciwnika == NULL){
+    printf("na wszystkich\n");
     sad.sin_addr.s_addr=htonl(INADDR_ANY);
     ustaw = 1;
   }
   else{
+    printf("%s\n",adresPrzeciwnika);
     sad.sin_addr.s_addr=inet_addr(adresPrzeciwnika);
   }
-  sad.sin_port=htons((ushort) portPrzeciwnika);
+  sad.sin_port=htons((ushort) PORT);
   bind(sock,(struct sockaddr *) &sad,sizeof(sad));
 /*  if(ustaw){*/
 /*    adresPrzeciwnika = sad.sin_addr.s_addr*/
@@ -352,10 +349,10 @@ void zainicjujPolaczenie(){
 void wyslij(ruch move){
   int val,len;
   len=sizeof(sad);
-  val = 1000* move.x1 + 100* move.y1 + 10 * move.x2 + move.y1;
-  
+  val = 1000* move.x1 + 100* move.y1 + 10 * move.x2 + move.y2;
+
+  printf("wysylam %d\n",val);
   val=htonl(val);
-  printf("wysylam\n");
   sendto(sock,&val,sizeof(int),0,(struct sockaddr *) &sad,len);
   printf("wyslalem\n");
 }
@@ -367,7 +364,7 @@ ruch odbierz(){
   printf("czekam\n");
   recvfrom(sock,&val,sizeof(int),0,(struct sockaddr *) &sad,&len);
   val=ntohl(val);  
-  printf("juz nie\n");
+  printf("juz nie %d\n",val);
   ruch move;
   move.x1 = val/1000;
   move.y1 = (val%1000)/100;
