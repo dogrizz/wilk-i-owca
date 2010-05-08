@@ -33,6 +33,7 @@ ruch odbierz();
 void wyslij(ruch);
 void dodajPion(int,int,char);
 void koniec(char);
+void zainicjujPolaczenie();
 
 Display *mydisplay;
 Window mywindow;
@@ -48,7 +49,9 @@ XEvent myevent;
 pion plansza[8][8];
 ruch ostatniRuch;
 char mojTyp;
-char *adresPrzeciwnika;
+int sock;
+struct sockaddr_in sad;
+char *adresPrzeciwnika = NULL;
 int portPrzeciwnika;
 int mojPort;
 
@@ -66,7 +69,9 @@ int main(int argc, char* argv[]){
     mojTyp = WILK;
     mojPort = 5000;
     portPrzeciwnika = 5001;
+    zainicjujPolaczenie();
     odbierz();
+   // zainicjujPolaczenie();
   }else if(argc ==2 ) {
     ruch inicjalizacja;
     inicjalizacja.x1 =9;
@@ -76,7 +81,7 @@ int main(int argc, char* argv[]){
     adresPrzeciwnika = argv[1];
     portPrzeciwnika = 5000;
     mojPort = 5001;
-    
+    zainicjujPolaczenie();
     wyslij(inicjalizacja);
     ruchPrzeciwnika = odbierz();
     wykonajRuch(ruchPrzeciwnika);
@@ -311,6 +316,7 @@ void koniec(char kto){
   else{
     XSetForeground(mydisplay,mygc,white.pixel);
     XDrawString(mydisplay,mywindow,mygc,180,200,"Przegrales",10);
+    
     while(1) {
       XNextEvent(mydisplay,&myevent); 
   
@@ -325,18 +331,48 @@ void koniec(char kto){
   }
 }
 
+void zainicjujPolaczenie(){
+  int ustaw = 0;
+  sock=socket(AF_INET,SOCK_DGRAM,0);
+  sad.sin_family=AF_INET;
+  if(adresPrzeciwnika == NULL){
+    sad.sin_addr.s_addr=htonl(INADDR_ANY);
+    ustaw = 1;
+  }
+  else{
+    sad.sin_addr.s_addr=inet_addr(adresPrzeciwnika);
+  }
+  sad.sin_port=htons((ushort) portPrzeciwnika);
+  bind(sock,(struct sockaddr *) &sad,sizeof(sad));
+/*  if(ustaw){*/
+/*    adresPrzeciwnika = sad.sin_addr.s_addr*/
+/*  }*/
+}
 
 void wyslij(ruch move){
-  int sock, val;
-  struct sockaddr_in sad;
+  int val,len;
+  len=sizeof(sad);
+  val = 1000* move.x1 + 100* move.y1 + 10 * move.x2 + move.y1;
   
+  val=htonl(val);
+  printf("wysylam\n");
+  sendto(sock,&val,sizeof(int),0,(struct sockaddr *) &sad,len);
+  printf("wyslalem\n");
 }
 
 
 ruch odbierz(){
-  int sock, val;
-  struct sockaddr_in sad;
+  int len,val;
+  len=sizeof(sad);
+  printf("czekam\n");
+  recvfrom(sock,&val,sizeof(int),0,(struct sockaddr *) &sad,&len);
+  val=ntohl(val);  
+  printf("juz nie\n");
   ruch move;
-  //sleep(5);
+  move.x1 = val/1000;
+  move.y1 = (val%1000)/100;
+  move.x2 = (val%100 )/10;
+  move.y2 = (val%10);
+  
   return move;
 }
