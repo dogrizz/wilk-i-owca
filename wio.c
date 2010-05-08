@@ -40,15 +40,17 @@ XSetWindowAttributes mywindowattributes;
 XGCValues mygcvalues;
 GC mygc;
 Visual *myvisual;
-int mydepth, myscreen, sock;
+int mydepth, myscreen;
 int wyswietlaj = 1;
 Colormap colorMap;
-XColor darkBrown,lightBrown,white,black,dummy;
+XColor darkBrown, lightBrown, white, black, dummy;
 XEvent myevent;
 pion plansza[8][8];
 ruch ostatniRuch;
 char mojTyp;
-struct sockaddr_in sad;
+char *adresPrzeciwnika;
+int portPrzeciwnika;
+int mojPort;
 
 pion null;
 int clickCounter=0;
@@ -57,22 +59,43 @@ int wykonalemRuch = 0;
 int main(int argc, char* argv[]){
   inicjujOkno();
   inicjujPlansze();
+  eventy();
+  ruch ruchPrzeciwnika;
   
   if(argc == 1) {
     mojTyp = WILK;
-  }else {
+    mojPort = 5000;
+    portPrzeciwnika = 5001;
+    odbierz();
+  }else if(argc ==2 ) {
+    ruch inicjalizacja;
+    inicjalizacja.x1 =9;
+    inicjalizacja.y1 =9;
+    inicjalizacja.x2 =9;
+    inicjalizacja.y2 =9;
+    adresPrzeciwnika = argv[1];
+    portPrzeciwnika = 5000;
+    mojPort = 5001;
+    
+    wyslij(inicjalizacja);
+    ruchPrzeciwnika = odbierz();
+    wykonajRuch(ruchPrzeciwnika);
+    sprawdzStan();
     mojTyp = OWCA;
+  }else{
+    printf("Podano zbyt duza liczba argumentow\n Poprawne uzycie ./bin adres_ip\n");
   }
   
   while(wyswietlaj){
+    XSync(mydisplay,True);
     eventy();
     if(wykonalemRuch == 1){
+      wyslij(ostatniRuch);
       wykonalemRuch = 0;
       sprawdzStan();
-    
       //ruchPrzeciwnika = odbierz();
       //wykonajRuch(ruchPrzeciwnika);
-      sprawdzStan();
+      //sprawdzStan();
     }
   }
   
@@ -163,7 +186,6 @@ void eventy(){
       break;
      case ButtonPress:
       if(clickCounter ==0){
-        printf("1\n");
         clickCounter=1;
         move.y1=myevent.xbutton.x/50;
         move.x1=myevent.xbutton.y/50;
@@ -171,7 +193,6 @@ void eventy(){
           clickCounter=0;
         }
       }else{
-        printf("2\n");
         move.y2=myevent.xbutton.x/50;
         move.x2=myevent.xbutton.y/50;
         if(sprawdzRuch(move)){
@@ -302,4 +323,20 @@ void koniec(char kto){
     }
     
   }
+}
+
+
+void wyslij(ruch move){
+  int sock, val;
+  struct sockaddr_in sad;
+  
+}
+
+
+ruch odbierz(){
+  int sock, val;
+  struct sockaddr_in sad;
+  ruch move;
+  //sleep(5);
+  return move;
 }
