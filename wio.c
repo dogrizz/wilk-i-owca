@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
     XSync(mydisplay,True); //usuniecie wszystkich eventow wyklikanych w czasie oczekiwania na ruch
     eventy();
     if(wykonalemRuch == 1){
-      wyslij(ostatniRuch);
+      wyslij(ostatniRuch); // wysłanie ruchu przeciwnikowi
       wykonalemRuch = 0;
       sprawdzStan();
       ruchPrzeciwnika = odbierz();
@@ -83,7 +83,7 @@ void inicjujOkno(){
                       100,100,400,400,10,mydepth,InputOutput,
                       myvisual,CWBackPixel|CWOverrideRedirect,
                       &mywindowattributes);
-  XSelectInput(mydisplay,mywindow,ExposureMask|KeyPressMask|ButtonPressMask);
+  XSelectInput(mydisplay,mywindow,ExposureMask|ButtonPressMask);
   colorMap = DefaultColormap(mydisplay,myscreen);                 
   XAllocNamedColor(mydisplay,colorMap,"sienna4",&darkBrown,&dummy);
   XAllocNamedColor(mydisplay,colorMap,"WhiteSmoke",&white,&dummy);
@@ -296,7 +296,6 @@ void wyslij(ruch move){
   len=sizeof(sad);
   val = 1000* move.x1 + 100* move.y1 + 10 * move.x2 + move.y2;
 
-  printf("wysylam %d\n",val);
   val=htonl(val);
   sendto(sock,&val,sizeof(int),0,(struct sockaddr *) &sad,len);
   printf("wyslalem\n");
@@ -309,7 +308,7 @@ ruch odbierz(){
   printf("czekam\n");
   recvfrom(sock,&val,sizeof(int),0,(struct sockaddr *) &sad,(socklen_t *)&len);
   val=ntohl(val);  
-  printf("juz nie %d\n",val);
+  printf("juz nie\n");
   ruch move;
   move.x1 = val/1000;
   move.y1 = (val%1000)/100;
