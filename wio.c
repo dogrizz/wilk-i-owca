@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 #define PORT 5000
 #define OWCA 'o'
@@ -59,16 +60,16 @@ int clickCounter=0;
 int wykonalemRuch = 0;
 
 int main(int argc, char* argv[]){
+  ruch ruchPrzeciwnika;
   inicjujOkno();
   inicjujPlansze();
   eventy();
-  ruch ruchPrzeciwnika;
   
   if(argc == 1) {
     mojTyp = WILK;
     zainicjujPolaczenie();
     odbierz();
-   // zainicjujPolaczenie();
+    zainicjujPolaczenie();
   }else if(argc ==2 ) {
     ruch inicjalizacja;
     inicjalizacja.x1 =9;
@@ -327,13 +328,10 @@ void koniec(char kto){
 }
 
 void zainicjujPolaczenie(){
-  int ustaw = 0;
   sock=socket(AF_INET,SOCK_DGRAM,0);
   sad.sin_family=AF_INET;
   if(adresPrzeciwnika == NULL){
-    printf("na wszystkich\n");
     sad.sin_addr.s_addr=htonl(INADDR_ANY);
-    ustaw = 1;
   }
   else{
     printf("%s\n",adresPrzeciwnika);
@@ -341,9 +339,7 @@ void zainicjujPolaczenie(){
   }
   sad.sin_port=htons((ushort) PORT);
   bind(sock,(struct sockaddr *) &sad,sizeof(sad));
-/*  if(ustaw){*/
-/*    adresPrzeciwnika = sad.sin_addr.s_addr*/
-/*  }*/
+  
 }
 
 void wyslij(ruch move){
@@ -362,7 +358,7 @@ ruch odbierz(){
   int len,val;
   len=sizeof(sad);
   printf("czekam\n");
-  recvfrom(sock,&val,sizeof(int),0,(struct sockaddr *) &sad,&len);
+  recvfrom(sock,&val,sizeof(int),0,(struct sockaddr *) &sad,(socklen_t *)&len);
   val=ntohl(val);  
   printf("juz nie %d\n",val);
   ruch move;
@@ -370,6 +366,10 @@ ruch odbierz(){
   move.y1 = (val%1000)/100;
   move.x2 = (val%100 )/10;
   move.y2 = (val%10);
+ 
+  if(adresPrzeciwnika==NULL){
+    adresPrzeciwnika = inet_ntoa(sad.sin_addr);
+  }
   
   return move;
 }
