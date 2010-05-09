@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <string.h>
 
 #define PORT 5000
 #define OWCA 'o'
@@ -42,9 +43,14 @@ typedef struct Ruch {
 void inicjujOkno();
 
 /*
- * Metoda ustawia pionki na szachownicy.
+ * Metoda ustawia pola na szachownicy i dodaje wilka.
  */
 void inicjujPlansze();
+
+/*
+ * Dodaje do planszy owce
+ */
+void dodajOwce();
 
 /*
  * Obsluguje eventy X-ow. W tym, co najwazniejsze, clickniecia.
@@ -78,6 +84,8 @@ int sprawdzRuch(ruch);
 
 /*
  * Odbiera ruch od przeciwnika.
+ * Jezeli odebrany ruch nie pochodzi od przeciwnika
+ * zwraca ruch inicjalizacji (9,9,9,9)
  */
 ruch odbierz();
 

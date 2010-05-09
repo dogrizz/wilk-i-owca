@@ -10,12 +10,16 @@ int main(int argc, char* argv[]){
   ruch ruchPrzeciwnika;
   inicjujOkno();
   inicjujPlansze();
+  if(argc ==2){
+    dodajOwce();
+  }
   eventy();
   
   if(argc == 1) {
     mojTyp = WILK;
     zainicjujPolaczenie();
     odbierz();
+    dodajOwce();
   }else if(argc ==2 ) {
   
     //sztuczne dane potrzebne tylko do wyslania sygnalu startu
@@ -45,6 +49,10 @@ int main(int argc, char* argv[]){
       wykonalemRuch = 0;
       sprawdzStan();
       ruchPrzeciwnika = odbierz();
+      //poki ktos nowy probuje się dopiąć, a nie normalny ruch
+      while(ruchPrzeciwnika.x1 ==9 || ruchPrzeciwnika.y1 ==9 || ruchPrzeciwnika.x2 ==9 || ruchPrzeciwnika.y2 ==9 ){
+        ruchPrzeciwnika = odbierz();
+      }
       wykonajRuch(ruchPrzeciwnika);
       sprawdzStan();
     }
@@ -53,11 +61,21 @@ int main(int argc, char* argv[]){
   return 0;
 }
 
+void dodajOwce(){
+  dodajPion(0,1,OWCA);
+  dodajPion(0,3,OWCA);
+  dodajPion(0,5,OWCA);
+  dodajPion(0,7,OWCA);
+  XClearWindow(mydisplay,mywindow);
+  rysujPlansze();
+}
+
 void inicjujPlansze(){
   
   int i;
   int j;
   null.typ = ' ';
+  
   for(i=0;i<8;i++) {
     for(j=0;j<8;j++) {
       dodajPion(i,j,' ');
@@ -65,10 +83,6 @@ void inicjujPlansze(){
   }
   
   dodajPion(7,0,WILK);
-  dodajPion(0,1,OWCA);
-  dodajPion(0,3,OWCA);
-  dodajPion(0,5,OWCA);
-  dodajPion(0,7,OWCA);
   
 }
 
@@ -167,30 +181,36 @@ void rysujPionek(pion pionek) {
     } else {
       XSetForeground(mydisplay,mygc,black.pixel);
     }
+    //zeby zgadzal sie obraz wyswietlany z planszą trzeba zamienic x y.
     XFillArc(mydisplay,mywindow,mygc,5+pionek.y*50,5+pionek.x*50,40,40,0,360*64);
   }
 }
 
 int sprawdzRuch(ruch move){
+  // jeśli nie mieści się w zakresie
   if(move.x2 <0 || move.y2 <0 || move.x2 >8 || move.y2 >8){
     return 0;
   }
+  //jeśli na docelowym polu jest już pionek
   if(plansza[move.x2][move.y2].typ != null.typ){
     return 0;
   }
+  //jeśli punkt docelowy i źródłowy są takie same
   if(move.x1 == move.x2 && move.y1 == move.y2){
     return 0;
   }
   switch (plansza[move.x1][move.y1].typ) {
     case WILK:
+      //wilk moze sie ruszac tylko diagonalnie
       if(!((move.x1 +1 == move.x2 && move.y1-1 == move.y2) || (move.x1 +1 == move.x2 && move.y1+1 == move.y2) 
          || (move.x1 -1 == move.x2 && move.y1-1 == move.y2) || (move.x1 -1 == move.x2 && move.y1+1 == move.y2))) {
       return 0;
       }
       break;
     case  OWCA:
-    if(!((move.x1 +1 == move.x2 && move.y1+1 == move.y2) || (move.x1 +1 == move.x2 && move.y1-1 == move.y2))){
-      return 0;
+      //owca moze ruszac sie tylko na diagonalnie do przodu   
+      if(!((move.x1 +1 == move.x2 && move.y1+1 == move.y2) || (move.x1 +1 == move.x2 && move.y1-1 == move.y2))){
+        return 0;
     }
   }
   return 1;
@@ -233,6 +253,7 @@ void sprawdzStan(){
           if(sprawdzRuch(move)){
             return;
           }
+          //wilk nie ma już ruchów
           koniec(OWCA);
         }           
         break;
@@ -248,6 +269,7 @@ void koniec(char kto){
   if(mojTyp == kto){
     XSetForeground(mydisplay,mygc,white.pixel);
     XDrawString(mydisplay,mywindow,mygc,180,200,"Wygrales!",9);
+    
     while(1) {
       XNextEvent(mydisplay,&myevent); 
   
@@ -304,16 +326,32 @@ void wyslij(ruch move){
 
 ruch odbierz(){
   int len,val;
+  ruch move;
+  
   len=sizeof(sad);
   printf("czekam\n");
   recvfrom(sock,&val,sizeof(int),0,(struct sockaddr *) &sad,(socklen_t *)&len);
-  val=ntohl(val);  
+ 
+  //niepoprawne źródło paczki
+  if(adresPrzeciwnika!= NULL && strcmp(inet_ntoa(sad.sin_addr),adresPrzeciwnika)){
+    move.x1 = 9;
+    move.y1 = 9;
+    move.x2 = 9;
+    move.y2 = 9;
+    return move;
+  }
+ 
+  val=ntohl(val);
   printf("juz nie\n");
-  ruch move;
+  
   move.x1 = val/1000;
   move.y1 = (val%1000)/100;
   move.x2 = (val%100 )/10;
   move.y2 = (val%10);
+  
+  if(adresPrzeciwnika==NULL){
+    adresPrzeciwnika = inet_ntoa(sad.sin_addr);
+  }
   
   return move;
 }
