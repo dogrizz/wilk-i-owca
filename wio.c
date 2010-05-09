@@ -204,7 +204,7 @@ int sprawdzRuch(ruch move){
       //wilk moze sie ruszac tylko diagonalnie
       if(!((move.x1 +1 == move.x2 && move.y1-1 == move.y2) || (move.x1 +1 == move.x2 && move.y1+1 == move.y2) 
          || (move.x1 -1 == move.x2 && move.y1-1 == move.y2) || (move.x1 -1 == move.x2 && move.y1+1 == move.y2))) {
-      return 0;
+        return 0;
       }
       break;
     case  OWCA:
