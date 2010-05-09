@@ -1,1 +1,8 @@
-wilk i owca pisane w c z wykorzystniem biblioteki xLib hasające po sieci
+autor: Dominik Zmitrowicz
+zadanie: wilk i owce działające sieciowo
+mechanizm komunikacji: gniazda datagramowe BSD.
+        Jest to jedyny jaki poznaliśmy sposób wymiany informajci po sieci.
+        Pozwala zarówno na synchronizacje (czeka aż dostanie pakiet). 
+        Jak i dość wygodną wymiane danych.
+korzystanie: pierwszy gracz uruchamia program bez argumentow.(WILK)
+             drugi gracz uruchamia program z adresem ip przeciwnika.(OWCA)
