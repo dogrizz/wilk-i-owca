@@ -1,3 +1,9 @@
+/* Program: Wilk i owce
+ * author: Dominik Zmitrowicz
+ * 
+ * Plik główny programu.
+ */
+
 #include "wio.h"
 
 int main(int argc, char* argv[]){
@@ -11,11 +17,14 @@ int main(int argc, char* argv[]){
     zainicjujPolaczenie();
     odbierz();
   }else if(argc ==2 ) {
+  
+    //sztuczne dane potrzebne tylko do wyslania sygnalu startu
     ruch inicjalizacja;
     inicjalizacja.x1 =9;
     inicjalizacja.y1 =9;
     inicjalizacja.x2 =9;
     inicjalizacja.y2 =9;
+    
     adresPrzeciwnika = argv[1];
     zainicjujPolaczenie();
     wyslij(inicjalizacja);
@@ -24,11 +33,12 @@ int main(int argc, char* argv[]){
     sprawdzStan();
     mojTyp = OWCA;
   }else{
-    printf("Podano zbyt duza liczba argumentow\n Poprawne uzycie ./bin adres_ip\n");
+    printf("Podano zbyt duza liczba argumentow\n Poprawne uzycie ./wio adres_ip\n");
+    return 0;
   }
   
-  while(wyswietlaj){
-    XSync(mydisplay,True);
+  while(1){
+    XSync(mydisplay,True); //usuniecie wszystkich eventow wyklikanych w czasie oczekiwania na ruch
     eventy();
     if(wykonalemRuch == 1){
       wyslij(ostatniRuch);
