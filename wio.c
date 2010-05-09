@@ -69,7 +69,6 @@ int main(int argc, char* argv[]){
     mojTyp = WILK;
     zainicjujPolaczenie();
     odbierz();
-    zainicjujPolaczenie();
   }else if(argc ==2 ) {
     ruch inicjalizacja;
     inicjalizacja.x1 =9;
@@ -334,7 +333,6 @@ void zainicjujPolaczenie(){
     sad.sin_addr.s_addr=htonl(INADDR_ANY);
   }
   else{
-    printf("%s\n",adresPrzeciwnika);
     sad.sin_addr.s_addr=inet_addr(adresPrzeciwnika);
   }
   sad.sin_port=htons((ushort) PORT);
@@ -366,10 +364,6 @@ ruch odbierz(){
   move.y1 = (val%1000)/100;
   move.x2 = (val%100 )/10;
   move.y2 = (val%10);
- 
-  if(adresPrzeciwnika==NULL){
-    adresPrzeciwnika = inet_ntoa(sad.sin_addr);
-  }
   
   return move;
 }
