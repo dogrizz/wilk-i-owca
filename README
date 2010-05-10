@@ -6,3 +6,5 @@ mechanizm komunikacji: gniazda datagramowe BSD.
         Jak i dość wygodną wymiane danych.
 korzystanie: pierwszy gracz uruchamia program bez argumentow.(WILK)
              drugi gracz uruchamia program z adresem ip przeciwnika.(OWCA)
+             ruch wykonujemy przez click na pion i potem click na pole docelowe.
+             Piony poruszają się tylko diagonalnie, przy czym owce mogą tylko do przodu.
