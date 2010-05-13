@@ -188,7 +188,7 @@ void rysujPionek(pion pionek) {
 
 int sprawdzRuch(ruch move){
   // jeśli nie mieści się w zakresie
-  if(move.x2 <0 || move.y2 <0 || move.x2 >8 || move.y2 >8){
+  if(move.x2 <0 || move.y2 <0 || move.x2 >7 || move.y2 >7){
     return 0;
   }
   //jeśli na docelowym polu jest już pionek
