@@ -3,11 +3,13 @@ zadanie: wilk i owce działające sieciowo
 
 mechanizm komunikacji: gniazda datagramowe BSD.
         Jest to protokół,w którym zwczyajowo implementuje się wymiane danych w grach. 
-        Pozwala zarówno na synchronizacje (czeka aż dostanie pakiet). 
-        Jak i dość wygodną wymiane danych. Jednocześnie jest implementacyjnie
+        Pozwala zarówno na synchronizacje (czeka aż dostanie pakiet), 
+        jak i dość wygodną wymiane danych. Jednocześnie jest implementacyjnie
         prostsze niż zdalne rysowanie u klientów (a przynajmniej wydaje się bardziej logiczne). 
         
-korzystanie: Pierwszy gracz uruchamia program bez argumentow.(WILK)
+korzystanie: By skompilować program wystarczy wydać polecenie make.
+             Plik wykonywalny programy nazywa się wio
+             Pierwszy gracz uruchamia program bez argumentow.(WILK)
              Drugi gracz uruchamia program z adresem IP (nie nazwą hosta) przeciwnika.(OWCA)
              Ruch wykonujemy przez click na pion i potem click na pole docelowe.
              Piony poruszają się tylko diagonalnie, przy czym owce mogą tylko do przodu.
@@ -15,3 +17,4 @@ korzystanie: Pierwszy gracz uruchamia program bez argumentow.(WILK)
              Celem wilka jest dotarcie do górnej ćzęści planszy. Owce mają za zadanie otoczyć wilka,
              tak by nie miał dostępnego żadnego ruchu.
              Po zakończeniu gry, wciskamy dowolny przycisk aby zakończyć działanie aplikacji
+             Nie jest obsługiwane rozłączenie się przeciwnika w trakcie rozgrywki.
