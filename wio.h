@@ -8,13 +8,14 @@
 #include <X11/Xlib.h>
 #include <X11/X.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
 
-#define PORT 5000
+#define PORT 5250
 #define OWCA 'o'
 #define WILK 'w'
 

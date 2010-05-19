@@ -97,7 +97,7 @@ void inicjujOkno(){
                       100,100,400,400,10,mydepth,InputOutput,
                       myvisual,CWBackPixel|CWOverrideRedirect,
                       &mywindowattributes);
-  XSelectInput(mydisplay,mywindow,ExposureMask|ButtonPressMask);
+  XSelectInput(mydisplay,mywindow,ExposureMask|ButtonPressMask|KeyPressMask);
   colorMap = DefaultColormap(mydisplay,myscreen);                 
   XAllocNamedColor(mydisplay,colorMap,"sienna4",&darkBrown,&dummy);
   XAllocNamedColor(mydisplay,colorMap,"WhiteSmoke",&white,&dummy);
@@ -278,7 +278,10 @@ void koniec(char kto){
           rysujPlansze();
           XSetForeground(mydisplay,mygc,white.pixel);
           XDrawString(mydisplay,mywindow,mygc,180,200,"Wygrales!",9);    
-        }
+        break;
+        case KeyPress:
+          exit(0);
+      }
     }
   }
   else{
@@ -293,6 +296,9 @@ void koniec(char kto){
           rysujPlansze();
           XSetForeground(mydisplay,mygc,white.pixel);
           XDrawString(mydisplay,mywindow,mygc,180,200,"Przegrales",10);
+          break;
+        case KeyPress:
+          exit(0);
         }
     }
     
