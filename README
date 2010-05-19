@@ -2,9 +2,10 @@ autor: Dominik Zmitrowicz
 zadanie: wilk i owce działające sieciowo
 
 mechanizm komunikacji: gniazda datagramowe BSD.
-        Jest to jedyny jaki poznaliśmy sposób wymiany informajci po sieci.
+        Jest to protokół,w którym zwczyajowo implementuje się wymiane danych w grach. 
         Pozwala zarówno na synchronizacje (czeka aż dostanie pakiet). 
-        Jak i dość wygodną wymiane danych.  
+        Jak i dość wygodną wymiane danych. Jednocześnie jest implementacyjnie
+        prostsze niż zdalne rysowanie u klientów (a przynajmniej wydaje się bardziej logiczne). 
         
 korzystanie: Pierwszy gracz uruchamia program bez argumentow.(WILK)
              Drugi gracz uruchamia program z adresem IP (nie nazwą hosta) przeciwnika.(OWCA)
@@ -13,3 +14,4 @@ korzystanie: Pierwszy gracz uruchamia program bez argumentow.(WILK)
              Pierwszy ruch ma wilk. Nie można się zbijać pionami. Pion nie może wejść na pozycję innego piona.
              Celem wilka jest dotarcie do górnej ćzęści planszy. Owce mają za zadanie otoczyć wilka,
              tak by nie miał dostępnego żadnego ruchu.
+             Po zakończeniu gry, wciskamy dowolny przycisk aby zakończyć działanie aplikacji
